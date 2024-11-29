@@ -1,4 +1,5 @@
 import express from "express";
+import { authMiddleware } from "../middleware/authMiddleware";
 import { login, register, changePassword } from "../controllers/authController";
 import { getAllProducts, getSingleProduct, createProduct, updateProduct, deleteProduct } from "../controllers/productController";
 import { getAllInvoices, getSingleInvoice, createInvoice, updateInvoice, deleteInvoice } from "../controllers/invoiceController";
@@ -11,18 +12,17 @@ router.post("/auth/login", login);
 router.post("/auth/change-password", changePassword);
 
 // Product Routes
-router.get("/products", getAllProducts);
-router.get("/products/:id", getSingleProduct);
-router.post("/products", createProduct);
-router.patch("/products/:id", updateProduct);
-router.delete("/products/:id", deleteProduct);
+router.get("/products", authMiddleware, getAllProducts);
+router.get("/products/:id", authMiddleware, getSingleProduct);
+router.post("/products", authMiddleware, createProduct);
+router.patch("/products/:id", authMiddleware, updateProduct);
+router.delete("/products/:id", authMiddleware, deleteProduct);
 
 // Invoice Routes
-router.get("/invoices", getAllInvoices);
-router.get("/invoices/:id", getSingleInvoice);
-router.post("/invoices", createInvoice);
-router.patch("/invoices/:id", updateInvoice);
-router.delete("/invoices/:id", deleteInvoice);
-
+router.get("/invoices", authMiddleware, getAllInvoices);
+router.get("/invoices/:id", authMiddleware, getSingleInvoice);
+router.post("/invoices", authMiddleware, createInvoice);
+router.patch("/invoices/:id", authMiddleware, updateInvoice);
+router.delete("/invoices/:id", authMiddleware, deleteInvoice);
 
 export default router;

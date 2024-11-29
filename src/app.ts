@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import routes from "./routes/routes";
-import { errorHandler } from "./middleware/errorHandler"
+import { errorHandler } from "./middleware/errorHandler";
 import cors from 'cors';
 
 dotenv.config();
@@ -10,7 +10,8 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors())
+app.use(cors());
+
 // Routes
 app.use(routes);
 

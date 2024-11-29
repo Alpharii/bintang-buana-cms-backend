@@ -17,7 +17,7 @@ export const authMiddleware = async (req: RequestWithUser, res: Response, next: 
     const decoded: any = jwt.verify(token!, process.env.JWT_SECRET!);
     const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
     if (!user){
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized User tidak ditemukan" });
       return;
     }
 
@@ -25,7 +25,7 @@ export const authMiddleware = async (req: RequestWithUser, res: Response, next: 
     next();
   } catch (error) {
     console.error(error); // Menampilkan kesalahan di console
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized" , error});
   }
 };
 
