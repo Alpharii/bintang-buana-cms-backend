@@ -1,6 +1,6 @@
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
-import { login, register, changePassword } from "../controllers/authController";
+import { login, register, changePassword, getUserInfo, getAllUsers } from "../controllers/authController";
 import { getAllProducts, getSingleProduct, createProduct, updateProduct, deleteProduct } from "../controllers/productController";
 import { getAllInvoices, getSingleInvoice, createInvoice, updateInvoice, deleteInvoice } from "../controllers/invoiceController";
 
@@ -10,6 +10,8 @@ const router = express.Router();
 router.post("/auth/register", register);
 router.post("/auth/login", login);
 router.post("/auth/change-password", changePassword);
+router.get("/user", getAllUsers)
+router.get("/user/:id", authMiddleware, getUserInfo);
 
 // Product Routes
 router.get("/products", authMiddleware, getAllProducts);

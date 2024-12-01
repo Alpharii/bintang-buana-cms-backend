@@ -80,3 +80,33 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
   }
 };
 
+export const getUserInfo = async (req: Request, res: Response): Promise<void> => {
+  const userId = parseInt(req.params.id, 10); // Gunakan req.params untuk ID dari URL
+
+  if (isNaN(userId)) {
+    res.status(400).json({ message: "Invalid user ID" });
+    return;
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.status(200).json({ message: "User info fetched successfully", user });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user info", error });
+  }
+};
+
+
+export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const users = await prisma.user.findMany();
+    res.status(200).json({ message: "All users fetched successfully", users });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching all users", error });
+  }
+};
