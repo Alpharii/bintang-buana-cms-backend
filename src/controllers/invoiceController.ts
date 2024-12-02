@@ -4,7 +4,6 @@ import prisma from "../middleware/prisma";
 interface InvoiceRequest extends Request {
     body: {
         invoiceNo: string;
-        totalAmount: number;
         status: string;
         productIds: number[]; // Menyimpan ID produk yang terkait dengan invoice
     };
@@ -45,7 +44,21 @@ export const getSingleInvoice = async (req: Request, res: Response) : Promise<vo
 // Membuat invoice baru
 export const createInvoice = async (req: InvoiceRequest, res: Response) => {
     try {
-        const { invoiceNo, totalAmount, status, productIds } = req.body;
+        const { invoiceNo, status, productIds } = req.body;
+        
+        // Ambil produk dari database berdasarkan productIds
+        const products = await prisma.product.findMany({
+            where: {
+                id: { in: productIds }
+            }
+        });
+
+        // Hitung total amount dengan memperhitungkan diskon produk
+        const totalAmount = products.reduce((acc, product) => {
+            const discountPrice = product.discount ? product.price * (1 - product.discount / 100) : product.price;
+            return acc + (discountPrice * productIds.filter(id => id === product.id).length); // Mengalikan dengan jumlah produk yang dipesan
+        }, 0);
+
         const invoice = await prisma.invoice.create({
             data: {
                 invoiceNo,
@@ -66,15 +79,27 @@ export const createInvoice = async (req: InvoiceRequest, res: Response) => {
 export const updateInvoice = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { invoiceNo, totalAmount, status, productIds } = req.body;
+        const { invoiceNo, status, productIds } = req.body;
+
+        // Ambil produk baru dari database
+        const products = await prisma.product.findMany({
+            where: { id: { in: productIds } },
+        });
+
+        // Hitung total amount baru
+        const totalAmount = products.reduce((acc, product) => {
+            const discountPrice = product.discount ? product.price * (1 - product.discount / 100) : product.price;
+            return acc + (discountPrice * productIds.filter(id => id === product.id).length);
+        }, 0);
+
         const invoice = await prisma.invoice.update({
             where: { id: Number(id) },
             data: {
                 invoiceNo,
-                totalAmount,
                 status,
+                totalAmount,
                 products: {
-                    connect: productIds.map((id: number) => ({ id })), // Menambahkan produk baru ke invoice
+                    connect: productIds.map((id) => ({ id })),
                 },
             },
         });

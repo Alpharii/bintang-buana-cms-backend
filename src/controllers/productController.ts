@@ -24,7 +24,9 @@ export const getAllProducts = async (req: Request, res: Response) => {
 export const getSingleProduct = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const product = await prisma.product.findUnique({ where: { id: Number(id) } });
+        const product = await prisma.product.findUnique({
+            where: { id: Number(id) },
+        });
         if (!product) {
             res.status(404).json({ error: "Product not found" });
             return;
@@ -51,7 +53,7 @@ export const createProduct = async (req: Product, res: Response) : Promise<void>
         res.status(201).json({ message : "Product created successfully" , product});
         return
     } catch (error) {
-        res.status(500).json({ meesage: "Failed to create product" , error });
+        res.status(500).json({ message: "Failed to create product", error });
         return
     }
 };
@@ -74,7 +76,7 @@ export const updateProduct = async (req: Product, res: Response) : Promise<void>
         res.status(200).json({ message : "Product updated successfully" , product});
         return
     } catch (error) {
-        res.status(500).json({ meesage: "Failed to update product" , error });
+        res.status(500).json({ message: "Failed to update product", error });
         return
     }
 };
@@ -87,6 +89,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
         });
         res.status(200).json({ message : "Product deleted successfully" , product});
     } catch (error) {
-        res.status(500).json({ meesage: "Failed to delete product" , error });
+        res.status(500).json({ message: "Failed to delete product", error });
     }
 };
